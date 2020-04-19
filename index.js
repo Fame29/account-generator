@@ -7,25 +7,45 @@ var async = require("async");
 const firstline = require("firstline");
 const generated = new Set();
 var os = require("os");
-
 var express = require('express');
-var app = express();
 
-app.set('port', (process.env.PORT || 5000));
+bot.on('ready', function(){
+    bot.user.setGame(`${bot.users.size} Users | /help`, 'https://www.twitch.tv/oltores78/');
+})
+bot.on("message", async message =>{
+    if(message.content === prefix + "help"){
+    var help_embed = new Discord.RichEmbed()
+    .setColor("RANDOM")
+    .setThumbnail("https://cdn.discordapp.com/attachments/685545362596823246/692871443263914034/OIPEV8I93Q7.jpg")
+    .setTitle("Voici les différentes commandes de disponible :")
+    .setDescription("Pour utiliser le bot vous devez utiliser le prefix / suivit de votre commande.")
+    .addField(":tada: Gen _4_", "`gen + type de compte` `add + type de compte` `create + type de compte` `service` ")
+    .addField(":gear: Les utilitaires _3_", "`stats` `test` `restock + type de compte`")
+    .setTimestamp()
+    .setFooter("Codé par Fame#0001")
+    message.channel.sendMessage(help_embed)
+    console.log("commande d'aide demandée")
+}
+})
 
-//For avoidong Heroku $PORT error
-app.get('/', function (request, response) {
-    var result = 'App is running'
-    response.send(result);
-}).listen(app.get('port'), function () {
-    console.log('App is running, server is listening on port ', app.get('port'));
-});
-bot.on("ready", () => {
-    console.log(`Logged in as ${bot.user.tag}!`);
-});
+bot.on("message", async message =>{
+    if(message.content === prefix + "service"){
+    var help_embed = new Discord.RichEmbed()
+    .setColor("RANDOM")
+    .setThumbnail("https://cdn.discordapp.com/attachments/685545362596823246/692871443263914034/OIPEV8I93Q7.jpg")
+    .setTitle("Voici les différents services de disponible :")
+    .setDescription("Pour générer un compte vous devez faire /gen + service souhaité.")
+    .addField(":gear: Voici les services de disponible actuellement : _8_", "`spotify` `minecraft` `hulu` `fortnite` `uplay` `pornhub` `udemy` `steam` ")
+    .setTimestamp()
+    .setFooter("Codé par Fame#0001")
+    message.channel.sendMessage(help_embed)
+    console.log("commande de service demandée")
+}
+})
+
 
 bot.on("message", message => {
-    if (message.channel.id === "Channel_ID") { //This will make the bot work only in that channel
+   // if (message.channel.id === "701416717095796816") { //This will make the bot work only in that channel
         if (message.author.bot) return;
         var command = message.content
             .toLowerCase()
@@ -33,20 +53,20 @@ bot.on("message", message => {
             .split(" ")[0];
 
         if (command === "test") {
-            message.channel.send("Test done, bot is working");
+            message.channel.send("Test terminé, le bot est fonctionnel");
         }
 
         if (command === "gen") {
             if (generated.has(message.author.id)) {
                 message.channel.send(
-                    "Wait 15 minute before generating another account!. - " +
+                    "Attendez 15 minutes avant de générer un autres compte ! " +
                     message.author
                 );
             } else {
                 let messageArray = message.content.split(" ");
                 let args = messageArray.slice(1);
                 if (!args[0])
-                    return message.reply("Please, specify the service you want!");
+                    return message.reply("Veuillez mettre le service que vous souhaitez gen");
                 var fs = require("fs");
                 const filePath = __dirname + "/" + args[0] + ".txt";
 
@@ -56,25 +76,26 @@ bot.on("message", message => {
                         var position = data.toString().indexOf("\n");
                         var firstLine = data.split("\n")[0];
                         message.author.send(firstLine);
+                        console.log(firstline);
                         if (position != -1) {
                             data = data.substr(position + 1);
                             fs.writeFile(filePath, data, function (err) {
                                 const embed = {
-                                    title: "Account Generated!",
-                                    description: "Check your dm for the account's information!",
+                                    title: "Votre compte a été généré",
+                                    description: "Regarde tes messages privés pour avoir le compte",
                                     color: 8519796,
                                     timestamp: "2019-04-04T14:16:26.398Z",
                                     footer: {
                                         icon_url:
                                             "https://cdn.discordapp.com/avatars/530778425540083723/7a05e4dd16825d47b6cdfb02b92d26a5.png",
-                                        text: "Buy discord accounts from Mental#8106"
+                                        text: "Dev par Fame#0001"
                                     },
                                     thumbnail: {
                                         url:
                                             "http://www.compartosanita.it/wp-content/uploads/2019/02/right.png"
                                     },
                                     author: {
-                                        name: "Account Generator",
+                                        name: "GenBot",
                                         url: "https://discordapp.com",
                                         icon_url: bot.displayAvatarURL
                                     },
@@ -92,12 +113,12 @@ bot.on("message", message => {
                             });
                         } else {
                             message.channel.send(
-                                "Sorry, there isn't any account available for that service!"
+                                "Désolé mais le service que tu souhaites générer est en rupture de stock.."
                             );
                         }
                     } else {
                         message.channel.send(
-                            "Sorry, that service doesn't exists on our database"
+                            "Désolé mais ce service n'héxiste pas dans notre base de donnée."
                         );
                     }
                 });
@@ -106,12 +127,12 @@ bot.on("message", message => {
         else
             if (command === "stats") {
 
-                message.channel.send(`Total users: ${bot.users.size}`)
+                message.channel.send(`Voici le nombre de personne qui je surveille : ${bot.users.size}`)
             }
 
         if (command === "add") {
             if (!message.member.hasPermission("ADMINISTRATOR"))
-                return message.reply("Sorry, you can't do it, you are not an admin!");
+                return message.reply("Désolé mais vous ne pouvez pas faire ça car vous n'êtes pas admin !");
             var fs = require("fs");
             let messageArray = message.content.split(" ");
             let args = messageArray.slice(1);
@@ -120,44 +141,44 @@ bot.on("message", message => {
             const filePath = __dirname + "/" + args[1] + ".txt";
             fs.appendFile(filePath, os.EOL + args[0], function (err) {
                 if (err) return console.log(err);
-                message.channel.send("Done!")
+                message.channel.send("C'est fait !")
             });
 
 
         }
         if (command === "create") {
             if (!message.member.hasPermission("ADMINISTRATOR"))
-                return message.reply("Sorry, you can't do it, you are not an admin!");
+                return message.reply("Désolé mais vous ne pouvez pas faire ça car vous n'êtes pas admin !");
             var fs = require("fs");
             let messageArray = message.content.split(" ");
             let args = messageArray.slice(1);
             const filePath = __dirname + "/" + args[0] + ".txt";
             fs.writeFile(filePath, 'first:first', function (err) {
                 if (err) throw err;
-                message.channel.send("Done!")
+                message.channel.send("C'est fait !")
             });
         }
         if (command === "restock") {
             let messageArray = message.content.split(" ");
             let args = messageArray.slice(1);
             if (!message.member.hasPermission("ADMINISTRATOR"))
-                return message.reply("Sorry, you can't do it, you are not an admin!");
+                return message.reply("Désolé mais vous ne pouvez pas faire ça car vous n'êtes pas admin !");
             if (!args[0])
                 return message.reply(
-                    "Please, specify the service you want to restock!"
+                    "Veuillez spécifier le type de compte que vous avez restock."
                 );
             message.channel.send(
                 "@everyone " +
-                "**" +
+                "Des comptes**" +
                 args[0] +
                 "**" +
-                " has been restocked by " +
+                " ont été restock par " +
                 "<@" +
                 message.author.id +
                 ">"
             );
         }
-    }
+ //   }
 });
 
-bot.login("Token");
+bot.login("Njk4NjIxOTU1NTEwODk0NTky.XpIhMg.4NYdO-JGoS8ZxuwxQGjcqwyPxnc");
